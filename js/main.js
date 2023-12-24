@@ -38,16 +38,36 @@ const posts = [
     }
 ];
 
+let filteredPosts = posts;
+
 // Create an array with all distinct tags
 const distinctTags = [...new Set(posts.flatMap(post => post.tags.map(tag => tag.toLowerCase())))];
+
+// Select the select element
+const selectEl = document.querySelector('select');
+
+selectEl.addEventListener('change', function () {
+
+    filteredPosts = this.value === 'all' ? posts : posts.filter(post => post.tags.map(tag => tag.toLowerCase()).includes(this.value));
+
+    if (filteredPosts.length !== 0) {
+
+        mainEl.innerHTML = '';
+        postsGenerator(filteredPosts);
+
+    } else {
+
+        mainEl.innerHTML = '<h2 class="text-light my-3">Nessun post da visualizzare</h2>';
+
+    }
+
+});
 
 // Create the select options
 selectOptionsGenerator(distinctTags);
 
 // Select the main element
 const mainEl = document.querySelector('main');
-
-let filteredPosts = posts;
 
 // Generate all posts
 postsGenerator(filteredPosts);
@@ -61,10 +81,8 @@ postsGenerator(filteredPosts);
  */
 function selectOptionsGenerator(arr) {
 
-    // Select the select element
-    const selectEl = document.querySelector('select');
-
     // Create an array with different tags
+    arr.push('empty');
 
     arr.unshift('all');
 
