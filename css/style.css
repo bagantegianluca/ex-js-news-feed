@@ -1,0 +1,54 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    text-decoration: none;
+    list-style: none;
+}
+
+:root {
+    --primary: #023047;
+    --tag-geo: #008001;
+    --tag-tech: #000080;
+    --tag-cucina: #800080;
+    --tag-viaggi: #f3a360;
+    --tag-arte: #ffd601;
+}
+
+body {
+    background: var(--primary);
+}
+
+nav {
+    background: white;
+}
+
+section {
+    background: white;
+}
+
+i.fa-bookmark {
+    font-size: 2rem;
+    cursor: pointer;
+}
+
+.geo {
+    background: var(--tag-geo);
+}
+
+
+.tech {
+    background: var(--tag-tech);
+}
+
+.cucina {
+    background: var(--tag-cucina);
+}
+
+.viaggi {
+    background: var(--tag-viaggi);
+}
+
+.arte {
+    background: var(--tag-arte);
+}
