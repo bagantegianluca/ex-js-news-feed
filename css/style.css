@@ -52,3 +52,7 @@ i.fa-bookmark {
 .arte {
     background: var(--tag-arte);
 }
+
+.prova {
+    background: red;
+}

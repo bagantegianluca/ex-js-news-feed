@@ -52,8 +52,40 @@ let filteredPosts = posts;
 // Generate all posts
 postsGenerator(filteredPosts);
 
-
 //#region FUNCTIONS
+
+/**
+ * ### selectOptionsGenerator
+ * Create all elements of the array as option in the first select
+ * @param {string} arr The array with elements will become options of the select
+ */
+function selectOptionsGenerator(arr) {
+
+    // Select the select element
+    const selectEl = document.querySelector('select');
+
+    // Create an array with different tags
+
+    arr.unshift('all');
+
+    arr.forEach(tag => {
+
+        const optionMarkup = `<option${tag === 'all' ? ' selected' : ''}>${tag}</option>`;
+        selectEl.innerHTML += optionMarkup;
+
+    });
+};
+
+
+/**
+ * ### tagsGenerator
+ * Insert every element of the array as tag
+ * @param {string} arr The list of tags
+ * @returns The HTML markup to insert the tag
+ */
+function tagsGenerator(arr) { return arr.map(tag => `<div class="${tag.toLowerCase()} py-1 px-2 rounded-2">${tag.toLowerCase()}</div>`).join('') }
+
+//${tagsGenerator(element.tags)}
 
 /**
  * ### generatePosts
@@ -86,8 +118,7 @@ function postsGenerator(arr) {
         <img src="${element.urlImg.toLowerCase()}" alt="${element.urlImg.slice(6, element.urlImg.indexOf('.jpg')).toLowerCase()}" class="w-100 object-fit-cover mb-3">
 
         <div class="tags d-flex text-light gap-1">
-            <div class="geo py-1 px-2 rounded-2">geo</div>
-            <div class="tech py-1 px-2 rounded-2">tech</div>
+            ${tagsGenerator(element.tags)}
         </div>
 
     </section>
@@ -95,29 +126,8 @@ function postsGenerator(arr) {
     `
 
         mainEl.innerHTML += sectionElMarkup;
+
     })
 }
-
-/**
- * ### selectOptionsGenerator
- * Create all elements of the array as option in the first select
- * @param {string} arr The array with elements will become options of the select
- */
-function selectOptionsGenerator(arr) {
-
-    // Select the select element
-    const selectEl = document.querySelector('select');
-
-    // Create an array with different tags
-
-    arr.unshift('all');
-
-    arr.forEach(tag => {
-
-        const optionMarkup = `<option${tag === 'all' ? ' selected' : ''}>${tag}</option>`;
-        selectEl.innerHTML += optionMarkup;
-
-    });
-};
 
 //#endregion
