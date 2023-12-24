@@ -39,6 +39,7 @@ const posts = [
 ];
 
 let filteredPosts = posts;
+let favouritePosts = [];
 
 // Create an array with all distinct tags
 const distinctTags = [...new Set(posts.flatMap(post => post.tags.map(tag => tag.toLowerCase())))];
@@ -46,6 +47,7 @@ const distinctTags = [...new Set(posts.flatMap(post => post.tags.map(tag => tag.
 // Select the select element
 const selectEl = document.querySelector('select');
 
+// Select filter
 selectEl.addEventListener('change', function () {
 
     filteredPosts = this.value === 'all' ? posts : posts.filter(post => post.tags.map(tag => tag.toLowerCase()).includes(this.value));
@@ -65,6 +67,9 @@ selectEl.addEventListener('change', function () {
 
 // Create the select options
 selectOptionsGenerator(distinctTags);
+
+// Select the checkbox element
+const checkBoxEl = document.getElementById('checkBoxOnlySavedNews');
 
 // Select the main element
 const mainEl = document.querySelector('main');
@@ -111,39 +116,58 @@ function tagsGenerator(arr) { return arr.map(tag => `<div class="${tag.toLowerCa
  * @param {string} arr The array contains the posts to be displayed
  */
 function postsGenerator(arr) {
+
     // Generate single post
     arr.forEach(element => {
 
         const sectionElMarkup = `
-    <section class="p-3 my-3">
+        <section class="p-3 my-3">
 
-        <div class="title d-flex justify-content-between">
-            <div class="title-left">
+            <div class="title d-flex justify-content-between">
+                <div class="title-left">
 
-                <h2>${element.title}</h2>
-                <h5 class="mb-0">Pubblicato da ${element.author}</h5>
-                <h7 class="mb-0">in data ${element.published.slice(8, 10)}/${element.published.slice(5, 7)}/${element.published.slice(0, 4)}</h7>
+                    <h2>${element.title}</h2>
+                    <h5 class="mb-0">Pubblicato da ${element.author}</h5>
+                    <h7 class="mb-0">in data ${element.published.slice(8, 10)}/${element.published.slice(5, 7)}/${element.published.slice(0, 4)}</h7>
 
+                </div>
+
+                <div class="title-right">
+                    <i class="fa-regular fa-bookmark" id="bookmark-${element.id}"></i>
+                </div>
             </div>
 
-            <div class="title-right">
-                <i class="fa-regular fa-bookmark"></i>
+            <p class="my-3">${element.content}</p>
+
+            <img src="${element.urlImg.toLowerCase()}" alt="${element.urlImg.slice(6, element.urlImg.indexOf('.jpg')).toLowerCase()}" class="w-100 object-fit-cover mb-3">
+
+            <div class="tags d-flex text-light gap-1">
+                ${tagsGenerator(element.tags)}
             </div>
-        </div>
 
-        <p class="my-3">${element.content}</p>
+        </section>
+        <!-- Section post ${element.id} -->
+        `
 
-        <img src="${element.urlImg.toLowerCase()}" alt="${element.urlImg.slice(6, element.urlImg.indexOf('.jpg')).toLowerCase()}" class="w-100 object-fit-cover mb-3">
+        mainEl.insertAdjacentHTML('beforeend', sectionElMarkup);
 
-        <div class="tags d-flex text-light gap-1">
-            ${tagsGenerator(element.tags)}
-        </div>
+        // Check if post is a favourite one
+        const bookmarkEl = mainEl.lastElementChild.querySelector(`#bookmark-${element.id}`);
 
-    </section>
-    <!-- Section post ${element.id} -->
-    `
+        bookmarkEl.addEventListener('click', function () {
 
-        mainEl.innerHTML += sectionElMarkup;
+            if (bookmarkEl.classList.contains('fa-regular')) {
+
+                bookmarkEl.className = 'fa-solid fa-bookmark';
+                favouritePosts.push(element.id);
+
+            } else {
+
+                bookmarkEl.className = 'fa-regular fa-bookmark';
+                favouritePosts.splice(favouritePosts.indexOf(element.id), 1);
+
+            }
+        })
 
     })
 }
