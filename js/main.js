@@ -47,29 +47,30 @@ const distinctTags = [...new Set(posts.flatMap(post => post.tags.map(tag => tag.
 // Select the select element
 const selectEl = document.querySelector('select');
 
-// Select filter
-selectEl.addEventListener('change', function () {
-
-    filteredPosts = this.value === 'all' ? posts : posts.filter(post => post.tags.map(tag => tag.toLowerCase()).includes(this.value));
-
-    if (filteredPosts.length !== 0) {
-
-        mainEl.innerHTML = '';
-        postsGenerator(filteredPosts);
-
-    } else {
-
-        mainEl.innerHTML = '<h2 class="text-light my-3">Nessun post da visualizzare</h2>';
-
-    }
-
-});
-
 // Create the select options
 selectOptionsGenerator(distinctTags);
 
+// Add eventListener to the select filter
+selectEl.addEventListener('change', function () {
+
+    filteredPosts = this.value === 'all' ? posts : posts.filter(post => post.tags.map(tag => tag.toLowerCase()).includes(this.value));
+    filteredPosts = checkBoxEl.checked ? filteredPosts.filter(post => favouritePosts.includes(post.id)) : filteredPosts;
+
+    checkPostsToDisplay(filteredPosts);
+
+});
+
 // Select the checkbox element
 const checkBoxEl = document.getElementById('checkBoxOnlySavedNews');
+
+// Add eventListener to checkbox element
+checkBoxEl.addEventListener('change', function () {
+
+    filteredPosts = this.checked ? filteredPosts.filter(post => favouritePosts.includes(post.id)) : selectEl.value === 'all' ? posts : posts.filter(post => post.tags.map(tag => tag.toLowerCase()).includes(selectEl.value));
+
+    checkPostsToDisplay(filteredPosts);
+
+});
 
 // Select the main element
 const mainEl = document.querySelector('main');
@@ -99,7 +100,6 @@ function selectOptionsGenerator(arr) {
     });
 };
 
-
 /**
  * ### tagsGenerator
  * Insert every element of the array as tag
@@ -107,8 +107,6 @@ function selectOptionsGenerator(arr) {
  * @returns The HTML markup to insert the tag
  */
 function tagsGenerator(arr) { return arr.map(tag => `<div class="${tag.toLowerCase()} py-1 px-2 rounded-2">${tag.toLowerCase()}</div>`).join('') }
-
-//${tagsGenerator(element.tags)}
 
 /**
  * ### generatePosts
@@ -133,7 +131,7 @@ function postsGenerator(arr) {
                 </div>
 
                 <div class="title-right">
-                    <i class="fa-regular fa-bookmark" id="bookmark-${element.id}"></i>
+                    <i class="${favouritePosts.includes(element.id) ? 'fa-solid' : 'fa-regular'} fa-bookmark" id="bookmark-${element.id}"></i>
                 </div>
             </div>
 
@@ -149,27 +147,57 @@ function postsGenerator(arr) {
         <!-- Section post ${element.id} -->
         `
 
+        // Add new html code at the end of main element
         mainEl.insertAdjacentHTML('beforeend', sectionElMarkup);
 
         // Check if post is a favourite one
         const bookmarkEl = mainEl.lastElementChild.querySelector(`#bookmark-${element.id}`);
 
+        // Add eventListener to bookmark element 
         bookmarkEl.addEventListener('click', function () {
 
+            // If is not a favourite
             if (bookmarkEl.classList.contains('fa-regular')) {
 
+                // Set a class to set as favourite
                 bookmarkEl.className = 'fa-solid fa-bookmark';
+
+                // Add the id to the favouritePosts array
                 favouritePosts.push(element.id);
 
-            } else {
+            } else { //If is a favourite one
 
+                // Set a class to set as not a favourite one
                 bookmarkEl.className = 'fa-regular fa-bookmark';
+
+                // Remove the id from the favouritePosts array
                 favouritePosts.splice(favouritePosts.indexOf(element.id), 1);
 
             }
         })
 
     })
-}
+};
 
+/**
+ * ### checkPostsToDisplay
+ * Display posts or a message in page after checking if the array is empty or not
+ * @param {string} arr The array with posts to display
+ */
+function checkPostsToDisplay(arr) {
+
+    // If the array is not empty
+    if (arr.length !== 0) {
+
+        // Empty the page and regenerate posts
+        mainEl.innerHTML = '';
+        postsGenerator(arr);
+
+    } else { // If the array is empty
+
+        // Message in page for no posts to be displayed
+        mainEl.innerHTML = '<h2 class="text-light my-3">Nessun post da visualizzare</h2>';
+
+    }
+}
 //#endregion
